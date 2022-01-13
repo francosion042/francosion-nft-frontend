@@ -1,6 +1,6 @@
 import './styles/App.css';
 import twitterLogo from './assets/twitter-logo.svg';
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 
 // Constants
 const TWITTER_HANDLE = 'francosion042';
@@ -9,6 +9,7 @@ const OPENSEA_LINK = '';
 const TOTAL_MINT_COUNT = 50;
 
 const App = () => {
+  const [currentAccount, setCurrentAccount] = useState("");
 
   const checkIfWalletIsConnected = () => {
     /*
@@ -21,6 +22,33 @@ const App = () => {
       return;
     } else {
       console.log("We have the ethereum object", ethereum);
+    }
+  }
+
+   /*
+  * Implement your connectWallet method here
+  */
+  const connectWallet = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (!ethereum) {
+        alert("Get MetaMask!");
+        return;
+      }
+
+      /*
+      * Fancy method to request access to account.
+      */
+      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
+
+      /*
+      * Boom! This should print out public address once we authorize Metamask.
+      */
+      console.log("Connected", accounts[0]);
+      setCurrentAccount(accounts[0]); 
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -46,7 +74,13 @@ const App = () => {
           <p className="sub-text">
             Each unique. Each beautiful. Discover your NFT today.
           </p>
-          {renderNotConnectedContainer()}
+          {currentAccount === "" ? (
+            renderNotConnectedContainer()
+          ) : (
+            <button onClick={null} className="cta-button connect-wallet-button">
+              Mint NFT
+            </button>
+          )}
         </div>
         <div className="footer-container">
           <img alt="Twitter Logo" className="twitter-logo" src={twitterLogo} />
